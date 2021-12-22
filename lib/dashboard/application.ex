@@ -9,7 +9,7 @@ defmodule Dashboard.Application do
   def start(_type, _args) do
     children = [
       # Start the Ecto repository
-      Dashboard.Repo,
+      # Dashboard.Repo,
       # Start the Telemetry supervisor
       DashboardWeb.Telemetry,
       # Start the PubSub system

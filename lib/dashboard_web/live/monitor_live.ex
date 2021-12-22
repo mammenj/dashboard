@@ -30,7 +30,7 @@ defmodule DashboardWeb.MonitorLive do
               &nbsp;<br>
               <b>Updated:</b> <%=status.updated_at %>
               &nbsp;<br>
-              <b>Sent email:</b> <%=status.email_sent %>
+              <b>Sent email:</b> <%=status["email_sent"] %>
             </div>
             <div class="column">
               <%= case status.status do %>

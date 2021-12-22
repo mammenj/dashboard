@@ -91,7 +91,7 @@ defmodule Monitor.KafkaWorker do
     IO.inspect("Update_message with Manager")
     nd = NaiveDateTime.local_now()
     now = NaiveDateTime.to_string(nd)
-    status = %{system: message.system, status: message.status, message: message.message, updated_at: now, email_sent: nil, image: "images/kafka.png"}
+    status = %{system: message.system, status: message.status, message: message.message, updated_at: now, image: "images/kafka.png"}
     Monitor.Manager.update_state(@me, status)
   end
 

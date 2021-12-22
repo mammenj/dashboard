@@ -45,10 +45,7 @@ defmodule Monitor.Manager do
       state
       |> Map.put(data.system, data)
 
-    IO.puts("IN Manager update_and_merge.-----------")
-    IO.inspect(new_state)
-    IO.puts("IN Manager update_and_merge.-----------")
-    #send_mail(new_state)
+    send_mail(new_state)
     broadcast_change({:ok, new_state}, :update)
     {:noreply, new_state}
   end
@@ -79,17 +76,18 @@ defmodule Monitor.Manager do
 
     if message != nil do
       {_, msg} = message
+
+      email_sent = msg["email_sent"]
       IO.inspect("this is the message...email_sent.............??????????")
-      email_sent = Map.get(msg, :email_sent)
       IO.inspect(email_sent)
 
       if email_sent == nil do
         email = Monitor.MyMail.send(from_user, msg, to_user)
 
-        IO.puts("MOCKED EMAIL.....")
+        IO.puts(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>MOCKED EMAIL.....")
         IO.inspect(email)
-        {:ok, term} = Monitor.MyMailer.deliver(email)
-        IO.inspect(term)
+        # {:ok, term} = Monitor.MyMailer.deliver(email)
+        # IO.inspect(term)
         nd1 = NaiveDateTime.local_now()
         now1 = NaiveDateTime.to_string(nd1)
         new_message = Map.merge(msg, %{email_sent: now1})
@@ -101,14 +99,18 @@ defmodule Monitor.Manager do
   end
 
   defp get_error_status(state) do
-    IO.inspect("Filtering  ----------")
-
+    IO.inspect("Filtering  ----v------")
     new_map =
       Enum.find(state, fn {_, v} ->
-        v.status == :error and v.email_sent == nil
-      end)
+        if v.status == :error and v["email_sent"] == nil do
+          v
+        end
+      end
+      )
 
-    IO.inspect("Filtering Message ----------")
+    IO.inspect("-------------begin new map--------------")
     IO.inspect(new_map)
+    IO.inspect("-------------end new map----------------")
+    new_map
   end
 end
