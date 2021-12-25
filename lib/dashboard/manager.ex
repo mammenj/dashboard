@@ -18,15 +18,13 @@ defmodule Monitor.Manager do
 
   def update_state(caller, status) do
     # send_mail(status)
-
     GenServer.cast(@me, {:update_and_merge, caller, status})
-
   end
 
   @impl true
   def init(:ok) do
     IO.inspect("Manager init/ok")
-    {:ok, %{}}
+    {:ok, []}
   end
 
   @impl true
@@ -39,26 +37,39 @@ defmodule Monitor.Manager do
 
   @impl true
   def handle_cast({:update_and_merge, caller, data}, state) do
-    IO.inspect("#{caller} merging #{inspect(data)}  <<-------------")
+    IO.inspect("#{caller} state #{inspect(state)}  <<-------")
+    IO.inspect("#{caller} merging #{inspect(data)}  <<-------")
 
-    new_state =
-      state
-      |> Map.put(data.system, data)
+    # new_state =
+    #   state
+    #   |> Map.put(data.system, data)
 
-    send_mail(new_state)
+    #new_state = state ++ data
+    # state = if state !== [] or state === nil do
+    #   IO.inspect("-->>>>>> stat is not null <<-------")
+    #   Keyword.delete(state, data.system) ++ []
+    # end
+
+    # IO.inspect(" key_state #{inspect(state)}  <<-------")
+
+    #data_list = [data.system, data]
+    #new_state = state ++ data_list
+
+    new_state = Keyword.merge(state, data)
+    IO.inspect(new_state)
     broadcast_change({:ok, new_state}, :update)
     {:noreply, new_state}
   end
 
   @impl true
   def handle_info(:email, state) do
-    IO.inspect("Manager email handle info: #{state}")
+    #IO.inspect("Manager email handle info: #{state}")
     {:noreply, state}
   end
 
   @impl true
   def handle_info(_, state) do
-    IO.inspect("Manager handle info: #{state}")
+    #IO.inspect("Manager handle info: #{state}")
     {:noreply, state}
   end
 
@@ -67,50 +78,50 @@ defmodule Monitor.Manager do
     {:ok, result}
   end
 
-  def send_mail(status) do
-    message = get_error_status(status)
-    IO.inspect("-----------Message ----send_mail------")
-    IO.inspect(message)
-    from_user = %{name: "JSM", email: "mammenj@live.com"}
-    to_user = %{name: "JSM", email: "mammenj@gmail.com"}
+  # def send_mail(status) do
+  #   message = get_error_status(status)
+  #   IO.inspect("-----------Message ----send_mail------")
+  #   IO.inspect(message)
+  #   from_user = %{name: "JSM", email: "mammenj@live.com"}
+  #   to_user = %{name: "JSM", email: "mammenj@gmail.com"}
 
-    if message != nil do
-      {_, msg} = message
+  #   if message != nil do
+  #     {_, msg} = message
 
-      email_sent = msg["email_sent"]
-      IO.inspect("this is the message...email_sent.............??????????")
-      IO.inspect(email_sent)
+  #     email_sent = msg["email_sent"]
+  #     IO.inspect("this is the message...email_sent.............??????????")
+  #     IO.inspect(email_sent)
 
-      if email_sent == nil do
-        email = Monitor.MyMail.send(from_user, msg, to_user)
+  #     if email_sent == nil do
+  #       email = Monitor.MyMail.send(from_user, msg, to_user)
 
-        IO.puts(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>MOCKED EMAIL.....")
-        IO.inspect(email)
-        # {:ok, term} = Monitor.MyMailer.deliver(email)
-        # IO.inspect(term)
-        nd1 = NaiveDateTime.local_now()
-        now1 = NaiveDateTime.to_string(nd1)
-        new_message = Map.merge(msg, %{email_sent: now1})
-        IO.puts("################# new state.....")
-        IO.inspect(new_message)
-        Monitor.Manager.update_state(@me, new_message)
-      end
-    end
-  end
+  #       IO.puts(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>MOCKED EMAIL.....")
+  #       IO.inspect(email)
+  #       # {:ok, term} = Monitor.MyMailer.deliver(email)
+  #       # IO.inspect(term)
+  #       nd1 = NaiveDateTime.local_now()
+  #       now1 = NaiveDateTime.to_string(nd1)
+  #       new_message = Map.merge(msg, %{email_sent: now1})
+  #       IO.puts("################# new state.....")
+  #       IO.inspect(new_message)
+  #       Monitor.Manager.update_state(@me, new_message)
+  #     end
+  #   end
+  # end
 
-  defp get_error_status(state) do
-    IO.inspect("Filtering  ----v------")
-    new_map =
-      Enum.find(state, fn {_, v} ->
-        if v.status == :error and v["email_sent"] == nil do
-          v
-        end
-      end
-      )
+  # defp get_error_status(state) do
+  #   IO.inspect("Filtering  ----v------")
+  #   new_map =
+  #     Enum.find(state, fn {_, v} ->
+  #       if v.status == :error and v["email_sent"] == nil do
+  #         v
+  #       end
+  #     end
+  #     )
 
-    IO.inspect("-------------begin new map--------------")
-    IO.inspect(new_map)
-    IO.inspect("-------------end new map----------------")
-    new_map
-  end
+  #   IO.inspect("-------------begin new map--------------")
+  #   IO.inspect(new_map)
+  #   IO.inspect("-------------end new map----------------")
+  #   new_map
+  # end
 end

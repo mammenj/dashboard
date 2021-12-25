@@ -1,7 +1,7 @@
 defmodule Monitor.KafkaWorker do
   use GenServer
   @me __MODULE__
-  @kafka "Kafka"
+  @kafka :Kafka
 
 
   def start_link(opts) do
@@ -91,8 +91,11 @@ defmodule Monitor.KafkaWorker do
     IO.inspect("Update_message with Manager")
     nd = NaiveDateTime.local_now()
     now = NaiveDateTime.to_string(nd)
-    status = %{system: message.system, status: message.status, message: message.message, updated_at: now, image: "images/kafka.png"}
-    Monitor.Manager.update_state(@me, status)
+    new_message = Map.merge(message, %{system: message.system, status: message.status, message: message.message, updated_at: now, image: "images/kafka.png"})
+    #status = %{system: message.system, status: message.status, message: message.message, updated_at: now, image: "images/kafka.png"}
+    data_list = [{new_message.system, new_message}]
+    #Monitor.Manager.update_state(@me, new_message)
+    Monitor.Manager.update_state(@me, data_list)
   end
 
 
