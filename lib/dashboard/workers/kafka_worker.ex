@@ -12,7 +12,6 @@ defmodule Monitor.KafkaWorker do
   @impl true
   def init(:ok) do
     IO.inspect("Kafka worker init/ok")
-    #update_message(%{system: @kafka,status: :init, message: "Connecting..."})
     Process.send_after(self(), :refresh, 12000)
     {:ok, %{}}
   end
@@ -97,17 +96,9 @@ defmodule Monitor.KafkaWorker do
       IO.inspect("Update_message with Manager.....")
       IO.inspect(updated_status)
       new_message = Map.merge(updated_status, %{system: message.system, status: message.status, message: message.message, updated_at: now, image: "images/kafka.png"})
-      #status = %{system: message.system, status: message.status, message: message.message, updated_at: now, image: "images/kafka.png"}
-      #data_list = {new_message.system, new_message}
-      #Monitor.Manager.update_state(@me, new_message)
       Monitor.Manager.update_state(@me, new_message.system, new_message)
     end
 
-    # new_message = Map.merge(current_state, %{system: message.system, status: message.status, message: message.message, updated_at: now, image: "images/kafka.png"})
-    # #status = %{system: message.system, status: message.status, message: message.message, updated_at: now, image: "images/kafka.png"}
-    # data_list = [{new_message.system, new_message}]
-    # #Monitor.Manager.update_state(@me, new_message)
-    # Monitor.Manager.update_state(@me, data_list)
   end
 
 

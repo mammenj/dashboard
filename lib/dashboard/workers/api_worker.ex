@@ -69,9 +69,7 @@ defmodule Monitor.ApiWorker do
     IO.inspect("ApiWorker Update_message with Manager")
     nd = NaiveDateTime.local_now()
     now = NaiveDateTime.to_string(nd)
-    #status =%{system: message.system, status: message.status, message: message.message, updated_at: now, image: "images/rest-api.png"}
     new_message = Map.merge(message, %{system: message.system, status: message.status, message: message.message, updated_at: now, image: "images/rest-api.png"})
-    #data_list = [{new_message.system, new_message}]
     Monitor.Manager.update_state(@me, message.system, new_message)
   end
 end

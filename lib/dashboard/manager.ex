@@ -17,14 +17,12 @@ defmodule Monitor.Manager do
   end
 
   def update_state(caller, key, status) do
-    # send_mail(status)
     GenServer.cast(@me, {:update_and_merge, caller, key, status})
   end
 
   @impl true
   def init(:ok) do
     IO.inspect("Manager init/ok")
-    # {:ok, []}
     {:ok, %{}}
   end
 
@@ -43,34 +41,10 @@ defmodule Monitor.Manager do
     IO.inspect("#{caller} merging #{inspect(data)}  <<-------")
     IO.inspect("#{caller} keykeykeykey #{inspect(key)}  <<-------")
 
-    # new_state = Enum.each state, fn {key, data} ->
-    #   IO.puts("#{key} ---------------------------------------------> #{data}")
-    #   put_in(state, key, data)
-    # end
-
     new_state =
       state
       |> Map.put(key, data)
-    # new_state= for s <- state do
-    #   Map.put(s, data.system, data)
-    #   IO.inspect("----------------------------------------NEW _STATE ....00000")
-    #   IO.inspect(s)
-    # end
 
-    #new_state = put_in(state, data.system, data)
-
-    #new_state = state ++ data
-    # state = if state !== [] or state === nil do
-    #   IO.inspect("-->>>>>> stat is not null <<-------")
-    #   Keyword.delete(state, data.system) ++ []
-    # end
-
-    # IO.inspect(" key_state #{inspect(state)}  <<-------")
-
-    #data_list = [data.system, data]
-    #new_state = state ++ data_list
-
-    #new_state = Map.merge(state, data)
     IO.inspect(new_state)
     broadcast_change({:ok, new_state}, :update)
     {:noreply, new_state}
@@ -84,7 +58,6 @@ defmodule Monitor.Manager do
 
   @impl true
   def handle_info(_, state) do
-    #IO.inspect("Manager handle info: #{state}")
     {:noreply, state}
   end
 
@@ -93,50 +66,4 @@ defmodule Monitor.Manager do
     {:ok, result}
   end
 
-  # def send_mail(status) do
-  #   message = get_error_status(status)
-  #   IO.inspect("-----------Message ----send_mail------")
-  #   IO.inspect(message)
-  #   from_user = %{name: "JSM", email: "mammenj@live.com"}
-  #   to_user = %{name: "JSM", email: "mammenj@gmail.com"}
-
-  #   if message != nil do
-  #     {_, msg} = message
-
-  #     email_sent = msg["email_sent"]
-  #     IO.inspect("this is the message...email_sent.............??????????")
-  #     IO.inspect(email_sent)
-
-  #     if email_sent == nil do
-  #       email = Monitor.MyMail.send(from_user, msg, to_user)
-
-  #       IO.puts(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>MOCKED EMAIL.....")
-  #       IO.inspect(email)
-  #       # {:ok, term} = Monitor.MyMailer.deliver(email)
-  #       # IO.inspect(term)
-  #       nd1 = NaiveDateTime.local_now()
-  #       now1 = NaiveDateTime.to_string(nd1)
-  #       new_message = Map.merge(msg, %{email_sent: now1})
-  #       IO.puts("################# new state.....")
-  #       IO.inspect(new_message)
-  #       Monitor.Manager.update_state(@me, new_message)
-  #     end
-  #   end
-  # end
-
-  # defp get_error_status(state) do
-  #   IO.inspect("Filtering  ----v------")
-  #   new_map =
-  #     Enum.find(state, fn {_, v} ->
-  #       if v.status == :error and v["email_sent"] == nil do
-  #         v
-  #       end
-  #     end
-  #     )
-
-  #   IO.inspect("-------------begin new map--------------")
-  #   IO.inspect(new_map)
-  #   IO.inspect("-------------end new map----------------")
-  #   new_map
-  # end
 end
