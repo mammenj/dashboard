@@ -8,15 +8,14 @@ defmodule Monitor.Supervisor do
 
   def init(:ok) do
     IO.inspect("Supervisor init/ok")
+
     children = [
       {Monitor.Manager, [name: Monitor.Manager]},
       {Monitor.KafkaWorker, [name: Monitor.KafkaWorker]},
-      {Monitor.ApiWorker, [name: Monitor.ApiWorker]}
-     #{Monitor.MailWorker, [name: Monitor.MailWorker]}
-
+      {Monitor.ApiWorker, [name: Monitor.ApiWorker]},
+      {Monitor.MailWorker, [name: Monitor.MailWorker]}
     ]
 
-  Supervisor.init(children, strategy: :one_for_one)
+    Supervisor.init(children, strategy: :one_for_one)
   end
-
 end

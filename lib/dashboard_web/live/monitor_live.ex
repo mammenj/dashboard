@@ -30,7 +30,7 @@ defmodule DashboardWeb.MonitorLive do
               &nbsp;<br>
               <b>Updated:</b> <%=status.updated_at %>
               &nbsp;<br>
-              <b>Sent email:</b> <%=status["email_sent"] %>
+              <b>Sent email:</b> <%=status[:email_sent] %>
             </div>
             <div class="column">
               <%= case status.status do %>
@@ -54,13 +54,13 @@ defmodule DashboardWeb.MonitorLive do
 
 
     def handle_info({:update,results}, socket) do
-      IO.inspect("----------Receiving Kafka Update..........")
+      IO.inspect("----------Live mOnitor --- Receiving Kafka Update..........")
       socket = assign(socket, :statuses, results )
       {:noreply, socket}
     end
 
     def handle_info({:api_update,results}, socket) do
-      IO.inspect("----------Receiving API Update..........")
+      IO.inspect("------Live mOnitor --- ----Receiving API Update..........")
       socket = assign(socket, :statuses, results )
       {:noreply, socket}
     end

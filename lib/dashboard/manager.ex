@@ -16,15 +16,16 @@ defmodule Monitor.Manager do
     GenServer.call(@me, :profile)
   end
 
-  def update_state(caller, status) do
+  def update_state(caller, key, status) do
     # send_mail(status)
-    GenServer.cast(@me, {:update_and_merge, caller, status})
+    GenServer.cast(@me, {:update_and_merge, caller, key, status})
   end
 
   @impl true
   def init(:ok) do
     IO.inspect("Manager init/ok")
-    {:ok, []}
+    # {:ok, []}
+    {:ok, %{}}
   end
 
   @impl true
@@ -35,14 +36,28 @@ defmodule Monitor.Manager do
     {:reply, state, state}
   end
 
+
   @impl true
-  def handle_cast({:update_and_merge, caller, data}, state) do
+  def handle_cast({:update_and_merge, caller, key, data}, state) do
     IO.inspect("#{caller} state #{inspect(state)}  <<-------")
     IO.inspect("#{caller} merging #{inspect(data)}  <<-------")
+    IO.inspect("#{caller} keykeykeykey #{inspect(key)}  <<-------")
 
-    # new_state =
-    #   state
-    #   |> Map.put(data.system, data)
+    # new_state = Enum.each state, fn {key, data} ->
+    #   IO.puts("#{key} ---------------------------------------------> #{data}")
+    #   put_in(state, key, data)
+    # end
+
+    new_state =
+      state
+      |> Map.put(key, data)
+    # new_state= for s <- state do
+    #   Map.put(s, data.system, data)
+    #   IO.inspect("----------------------------------------NEW _STATE ....00000")
+    #   IO.inspect(s)
+    # end
+
+    #new_state = put_in(state, data.system, data)
 
     #new_state = state ++ data
     # state = if state !== [] or state === nil do
@@ -55,7 +70,7 @@ defmodule Monitor.Manager do
     #data_list = [data.system, data]
     #new_state = state ++ data_list
 
-    new_state = Keyword.merge(state, data)
+    #new_state = Map.merge(state, data)
     IO.inspect(new_state)
     broadcast_change({:ok, new_state}, :update)
     {:noreply, new_state}
